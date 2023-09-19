@@ -48,4 +48,31 @@ def register():
         user = User.query.filter_by(username=username).first()
         if user:
             flash('Данное имя пользователя уже занято')
+                    else:
+            hashed_password = generate_password_hash(password)
+            new_user = User(username=username, password=hashed_password, email=email)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Аккаунт успешно создан!')
+            return redirect(url_for('login'))
+    return render_template('register.html')
+
+
+
+@app.route('/profile')
+def profile():
+    if current_user.is_authenticated:
+        return render_template('profile.html', user=current_user)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
 
